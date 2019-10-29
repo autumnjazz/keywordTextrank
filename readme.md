@@ -1,8 +1,8 @@
 <h1>1. 프로젝트 설명</h1>
 본 프로젝트는 자연어 텍스트 내에서 단어를 추출하여 다중 레벨 마인드맵을 만드는 것을 목표로 한다. 다중 레벨 마인드 맵이란, 각 레벨에 TextRank 로 선정된 텍스트의 핵심 키워드가 위치해 있고, 각 핵심 키워드 마다 Community Detection 을 적용하여, 소속된 community 내에서의 새로운 키워드를 Topic-Specific TextRank 를 통해 선정하여 마인드맵에 표현하는 것이다. 이 때 Topic-Specific TextRank 는 Topic-Specific PageRank 의 변형으로, 프로젝트에서 새로 제안하는 알고리즘이다. 
-
+<img width = 200>
 ![multilevelmindmap](https://user-images.githubusercontent.com/45510328/67734011-480bda80-fa43-11e9-9880-3faae9d9d61d.png)
-
+</img>
 
 
 <h1>2. 데이터셋 및 그래프 모델</h1>
