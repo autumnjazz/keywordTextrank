@@ -1,6 +1,6 @@
 import re
 import string
-from stopwords import stopwords
+from .stopwords import stopwords
 
 def get_data(path=None):    #원문 그대로
     if path != None:

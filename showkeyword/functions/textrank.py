@@ -2,7 +2,7 @@ from collections import defaultdict
 from scipy.sparse import csr_matrix
 from sklearn.preprocessing import normalize
 import numpy as np
-from preprocessing  import get_word_by_sent, word_idx, idx_word
+from .preprocessing  import get_word_by_sent, word_idx, idx_word
 
 
 def count_matrix(word_by_sent, word_to_idx, window=3):
