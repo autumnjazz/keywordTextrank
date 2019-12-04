@@ -8,9 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
  
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
@@ -57,19 +55,6 @@
         $("#textarea1").val("Story highlights Don't be fooled by the word \"energy\" Some energy bars contain as much saturated fat as a Snickers bar Energy bars are a convenient source of nutrition and come in a wide variety of flavors to satisfy different palates. They are often fortified with vitamins and minerals, which can help fill nutritional gaps. But, like many foods in a specific category, not all energy bars are created equal. Those that are low in saturated fat and sugars, with a decent amount of protein and fiber, can provide a nutritious, satisfying pick-me-up. Others can closely mimic a candy bar. For example, some bars covered in chocolate contain as much saturated fat as a Snickers bar; others contain almost as much sugar. Granola bars are a convenient source of nutrition, but can vary significantly in terms of nutrition. Energy bars containing mostly fruit and nuts can serve as satisfying snacks. But if you're looking for a meal replacement, aim for a bar with a higher amount of protein: about 10 to 20 grams. Athletes can also benefit from choosing a bar with more protein and carbohydrates, as their needs are higher. You can afford more calories if bars are consumed in place of meals and not as snacks. But if a bar is intended only to tide you over until dinner, limit it to 150 to 200 calories. In general, try to aim for bars with less than 3 grams of saturated fat and at least 4 grams of fiber. Palm kernel oil in yogurt and chocolate coatings will boost saturated fat. Also watch out for bars with ingredients such as brown rice syrup or cane invert syrup listed first, as they are generally higher in sugars than others and are better suited for athletes, not weight watchers. ");
         M.textareaAutoResize($(".materialize-textarea"))
         
-        $("#submit").on("click", function(){
-            $.ajax({
-                url: "/count/",
-                type: "POST",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({"text": $("#textarea1").val()}),
-                dataType: "json",
-                success: function(data) {
-                    console.log(data);
-                },
-            });
-        });
-
         var svg = d3.select("svg"),
             width = +svg.attr("width"),
             height = +svg.attr("height");
@@ -79,47 +64,75 @@
                 .force("charge", d3.forceManyBody())
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
-        d3.json("/static/dummy.json", function(error, graph) {
-            if (error) throw error;
+        $("#submit").on("click", function(){
+            $.ajax({
+                url: "/count/",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({"text": $("#textarea1").val()}),
+                dataType: "json",
+                success: function(data) {
+                    var idx_to_word = [];
+                    for (var key in data.words) {
+                        idx_to_word[data.words[key]] = key;
+                    }
 
-            var link = svg.append("g")
-                    .attr("class", "links")
-                    .selectAll("line")
-                    .data(graph.links)
-                    .enter().append("line");
+                    let nodes = idx_to_word.map(function(word) { return {"id": word} })
 
-            var node = svg.append("g")
-                    .attr("class", "nodes")
-                    .selectAll("circle")
-                    .data(graph.nodes)
-                    .enter().append("circle")
-                    .attr("r", 2.5)
-                    .call(d3.drag()
-                        .on("start", dragstarted)
-                        .on("drag", dragged)
-                        .on("end", dragended));
+                    let links = []
+                    for (var i = 0; i < data.graph.length; ++i) {
+                        for (var j = 0; j < data.graph[i].length; ++j) {
+                            if (data.graph[i][j] > 0) {
+                                links.push({
+                                    "source": idx_to_word[i],
+                                    "target": idx_to_word[j],
+                                    "value": data.graph[i][j]
+                                })
+                            }
+                        }
+                    }
+                    console.log(links);
 
-            node.append("title")
-                .text(function(d) { return d.id; });
+                    var link = svg.append("g")
+                            .attr("class", "links")
+                            .selectAll("line")
+                            .data(links)
+                            .enter().append("line");
 
-            simulation
-                .nodes(graph.nodes)
-                .on("tick", ticked);
+                    var node = svg.append("g")
+                            .attr("class", "nodes")
+                            .selectAll("circle")
+                            .data(nodes)
+                            .enter().append("circle")
+                            .attr("r", 2.5)
+                            .call(d3.drag()
+                                .on("start", dragstarted)
+                                .on("drag", dragged)
+                                .on("end", dragended));
 
-            simulation.force("link")
-                .links(graph.links);
+                    node.append("title")
+                        .text(function(d) { return d.id; });
 
-            function ticked() {
-                link
-                    .attr("x1", function(d) { return d.source.x; })
-                    .attr("y1", function(d) { return d.source.y; })
-                    .attr("x2", function(d) { return d.target.x; })
-                    .attr("y2", function(d) { return d.target.y; });
+                    simulation
+                        .nodes(nodes)
+                        .on("tick", ticked);
 
-                node
-                    .attr("cx", function(d) { return d.x; })
-                    .attr("cy", function(d) { return d.y; });
-            }
+                    simulation.force("link")
+                        .links(links);
+
+                    function ticked() {
+                        link
+                            .attr("x1", function(d) { return d.source.x; })
+                            .attr("y1", function(d) { return d.source.y; })
+                            .attr("x2", function(d) { return d.target.x; })
+                            .attr("y2", function(d) { return d.target.y; });
+
+                        node
+                            .attr("cx", function(d) { return d.x; })
+                            .attr("cy", function(d) { return d.y; });
+                    }
+                },
+            });
         });
 
         function dragstarted(d) {
