@@ -8,4 +8,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 	path('',showkeyword.views.home, name="home"),
     path('count/',showkeyword.views.count, name="count"),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
