@@ -1,6 +1,6 @@
 import re
 import string
-from stopwords import stopwords
+from showkeyword.functions.stopwords import stopwords
 
 
 def get_data(path=None):    
