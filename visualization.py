@@ -1,40 +1,36 @@
-from preprocessing  import get_data, get_word_by_sent, idx_word, word_idx
-from textrank import count_window
 import networkx as nx
 import matplotlib.pyplot as plt
 
-def counter_draw(counter, idx_to_word):
+from preprocessing  import wordlist #these are variables, not function
+from textrank import counter #these are variables, not function
+
+def counter_draw(counter, wordlist):
     cnt_draw = []
-    for edge, weight in counter.items():
-        tup = (idx_to_word[edge[0]], idx_to_word[edge[1]], weight)
-        cnt_draw.append(tup)
+    for edge, weight in counter.items(): #counter.items() = ((1,2),3)
+        cnt_draw.append((wordlist[edge[0]], wordlist[edge[1]], weight))
     return cnt_draw
 
-def initialGraph(idx_to_word,cnt_draw):
+def initialGraph(cnt_draw,wordlist):
     G = nx.Graph() #undirected
-    G.add_weighted_edges_from(cnt_draw) #노드 자동 생성,중복 엣지 없음, 단어가 노드
+    G.add_weighted_edges_from(cnt_draw) #create nodes as words automatically. no overlapped edges.
 
-    nx.draw_networkx(G,
-        pos=nx.spring_layout(G),
+    nx.draw_networkx(   
+        G,
+        pos = nx.spring_layout(G),
         with_labels = True,
-        node_color=[len(G[n]) for n in G],  #인접 노드 개수에 따라 색깔 정도 조절
+        node_color=[len(G[n]) for n in G],  #
         cmap=plt.cm.Blues, 
         node_size =300,
         font_size = 6,
-        width = 0.4
+        width = 0.4 
     ) 
     plt.show()
     # plt.savefig('initgraph2',  bbox_inches ='tight', format='svg')
 
 def textrankGraph(G, keywords):
-
+    #TODO: choose textrank keyword and a draw graph
     return G
 
-text = get_data()
-wbs = get_word_by_sent(text)
-word_to_idx = word_idx(text)
-idx_to_word = idx_word(text)
-counter = count_window(wbs,word_to_idx)
-cnt_draw = counter_draw(counter,idx_to_word)
 
-initialGraph(idx_to_word,cnt_draw)
+cnt_draw = counter_draw(counter,wordlist)
+initialGraph(cnt_draw,wordlist)
