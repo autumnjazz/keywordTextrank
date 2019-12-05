@@ -45,9 +45,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s8">
+            <div class="col s12">
 				<svg id="graph" width="960" height="600"></svg>
             </div>
+            <div id="control" class="hide">
+                <a id="textrank" class="col s2 waves-effect waves-light btn">TextRank</a>
+                <p id="textrank_result" class= "col s10"></p>
+            </div>
+            
         </div>
     </div>
 <script>
@@ -67,6 +72,8 @@
                 .force("y", d3.forceY().strength(0.1))
 				.force("collision", d3.forceCollide().radius(25));
 
+        var graph;
+        var idx_to_word = [];
         $("#submit").on("click", function(){
             $.ajax({
                 url: "/count/",
@@ -75,7 +82,9 @@
                 data: JSON.stringify({"text": $("#textarea1").val()}),
                 dataType: "json",
                 success: function(data) {
-                    var idx_to_word = [];
+                    $("#control").removeClass("hide");
+                    graph = data.graph;
+                    idx_to_word = [];
                     for (var key in data.words) {
                         idx_to_word[data.words[key]] = key;
                     }
@@ -83,13 +92,13 @@
                     let nodes = idx_to_word.map(function(word) { return {"id": word} })
 
                     let links = []
-                    for (var i = 0; i < data.graph.length; ++i) {
-                        for (var j = 0; j < data.graph[i].length; ++j) {
-                            if (data.graph[i][j] > 0) {
+                    for (var i = 0; i < graph.length; ++i) {
+                        for (var j = 0; j < graph[i].length; ++j) {
+                            if (graph[i][j] > 0) {
                                 links.push({
                                     "source": idx_to_word[i],
                                     "target": idx_to_word[j],
-                                    "value": data.graph[i][j]
+                                    "value": graph[i][j]
                                 })
                             }
                         }
@@ -164,6 +173,21 @@
             d.fx = null;
             d.fy = null;
         }
+
+        $("#textrank").click(function(e) {
+            console.log(graph)
+            console.log(idx_to_word);
+            $.ajax({
+                url: "/textrank/",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({graph: graph}),
+                dataType: "json",
+                success: function(data) {
+                    $("#textrank_result").text(data.result.map((i) => idx_to_word[i]).join(", "));
+                }
+            });
+        });
     });
 </script>
 </body>

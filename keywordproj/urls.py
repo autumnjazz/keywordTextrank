@@ -6,6 +6,7 @@ import showkeyword.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('',showkeyword.views.home, name="home"),
-    path('count/',showkeyword.views.count, name="count"),
+    path('', showkeyword.views.home, name="home"),
+    path('count/', showkeyword.views.count, name="count"),
+    path('textrank/', showkeyword.views.textrank, name="textrank"),
 ]
