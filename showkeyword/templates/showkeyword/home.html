@@ -64,13 +64,6 @@
             width = +svg.attr("width"),
             height = +svg.attr("height");
 
-        var simulation = d3.forceSimulation()
-                .force("link", d3.forceLink().id(function(d) { return d.id; }))
-                .force("charge", d3.forceManyBody())
-                .force("center", d3.forceCenter(width / 2, height / 2))
-                .force("x", d3.forceX().strength(0.1))
-                .force("y", d3.forceY().strength(0.1))
-				.force("collision", d3.forceCollide().radius(25));
 
         var graph;
         var idx_to_word = [];
@@ -88,6 +81,14 @@
                 success: function(data) {
                     graph = data.graph;
                     $("#control").removeClass("hide");
+                    
+                    var simulation = d3.forceSimulation()
+                            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+                            .force("charge", d3.forceManyBody())
+                            .force("center", d3.forceCenter(width / 2, height / 2))
+                            .force("x", d3.forceX().strength(0.1))
+                            .force("y", d3.forceY().strength(0.1))
+                            .force("collision", d3.forceCollide().radius(25));
 
                     for (var key in data.words) {
                         idx_to_word[data.words[key]] = key;
@@ -157,26 +158,27 @@
 								return "translate(" + d.x + "," + d.y + ")";
 							})
                     }
+                     
+                    function dragstarted(d) {
+                        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                        d.fx = d.x;
+                        d.fy = d.y;
+                    }
+
+                    function dragged(d) {
+                        d.fx = d3.event.x;
+                        d.fy = d3.event.y;
+                    }
+
+                    function dragended(d) {
+                        if (!d3.event.active) simulation.alphaTarget(0);
+                        d.fx = null;
+                        d.fy = null;
+                    }
                 },
             });
         });
 
-        function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
 
         $("#textrank").click(function(e) {
             console.log(graph)
