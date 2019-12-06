@@ -1,12 +1,25 @@
-from preprocessing  import get_data, get_word_by_sent, idx_word, word_idx
-from textrank import textrank_keyword, count_window
+import networkx as nx
 
+level = 3
+numofkeys = 2**level -1 #sum of G.P. with common ratio = 2
+
+from preprocessing import get_data, word_by_sent, wbys_to_word, word_to_idx, idx_by_sent
 text = get_data()
-wbs = get_word_by_sent(text)
-word_to_idx = word_idx(text)
-idx_to_word = idx_word(text)
-counter = count_window(wbs,word_to_idx)
-print(counter)
-# keywords = textrank_keyword(text, 5)
-# for value in keywords:
-#     print(value[0],value[1], end="\t")
+wbys = word_by_sent(text)
+wordlist = wbys_to_word(wbys)
+wtoi = word_to_idx(wordlist)
+ibys = idx_by_sent(wbys, wtoi)
+
+from textrank import count_window, textrank_keyword
+counter = count_window(ibys, 5)
+mainkeywords = textrank_keyword(text, ibys, wordlist,numofkeys)
+
+import visualization as vis
+cnt_draw = vis.counter_draw(counter,wordlist)
+IG = vis.initialGraph(cnt_draw,wordlist) # returns a graph
+# vis.initialGraph_draw(IG)
+# TG = vis.textrankGraph(mainkeywords) # returns a graph
+# vis.textrankGraph_draw(TG)
+partition, color = vis.communityGraph(IG) # returns dictionary and list
+vis.communityGraph_draw(IG, color) # the variable 'color' has 'partiton' variable, which can color the nodes by community
+

@@ -3,19 +3,25 @@ from scipy.sparse import csr_matrix
 from sklearn.preprocessing import normalize
 import numpy as np
 
-from preprocessing  import text, ibys, wordlist #these are variables, not function
-
+"""
+based on https://github.com/lovit/textrank
+"""
 
 def count_window(ibys, window=3): #only one directed edge and weight    #by index not word
     counter = defaultdict(int)
     if(window<2 or window > 10):
         window = 3
+
     for sent in ibys:
-        for i in range(len(sent)-window):
+        for i in range(len(sent)-window+1):
             word_window = sent[i:i+window]
             for j in range(window-1):
                 counter[(word_window[j], word_window[j+1])] += 1
             counter[(word_window[0], word_window[-1])] += 1
+        if len(sent)!=0 and len(sent) < window: 
+            for i in range(len(sent)-1):
+                counter[(sent[i], sent[i+1])] += 1
+            counter[(sent[0], sent[-1])] += 1
     return counter
 
 def adjacency_matrix(counter, size):
@@ -49,7 +55,4 @@ def textrank_keyword(text, ibys, wordlist, topk = 30):
     idxs = R.argsort()[-topk:]
     keywords = [(wordlist[idx], R[idx]) for idx in reversed(idxs)]
     return keywords
-
-counter = count_window(ibys)
-print(textrank_keyword(text, ibys, wordlist,5))
 

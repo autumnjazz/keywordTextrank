@@ -5,10 +5,10 @@ from stopwords import stopwords
 
 def get_data(path=None):    
     if path != None:
-        document_text = open(path, 'r')
-        text_string = document_text.read()
+        document_text = open(path, 'r', encoding='UTF8')
+        text_string = document_text.read() #TODO: KOREAN (UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 0: illegal multibyte sequence)
     else:
-        text_string = open('test_news.txt', 'r').read()
+        text_string = open('test_news.txt','r', encoding='UTF8').read()
     return text_string
 
 def split_to_sent(text_string): 
@@ -63,8 +63,3 @@ def tokenizer(wordlist):
     return token
 
 
-text = get_data()
-wbys = word_by_sent(text)
-wordlist = wbys_to_word(wbys)
-wtoi = word_to_idx(wordlist)
-ibys = idx_by_sent(wbys, wtoi)
