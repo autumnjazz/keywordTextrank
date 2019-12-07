@@ -1,14 +1,14 @@
 import re
 import string
-from showkeyword.functions.stopwords import stopwords
+from stopwords import stopwords
 
 
 def get_data(path=None):    
     if path != None:
-        document_text = open(path, 'r')
-        text_string = document_text.read()
+        document_text = open(path, 'r', encoding='UTF8')
+        text_string = document_text.read() #TODO: KOREAN (UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 0: illegal multibyte sequence)
     else:
-        text_string = open('test_news.txt', 'r').read()
+        text_string = open('test_news.txt','r', encoding='UTF8').read()
     return text_string
 
 def split_to_sent(text_string): 
