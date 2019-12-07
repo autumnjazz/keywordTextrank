@@ -9,4 +9,5 @@ urlpatterns = [
     path('', showkeyword.views.home, name="home"),
     path('count/', showkeyword.views.count, name="count"),
     path('textrank/', showkeyword.views.textrank, name="textrank"),
+    path('community_detection/', showkeyword.views.community_detection, name="community_detection")
 ]

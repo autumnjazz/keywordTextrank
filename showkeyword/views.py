@@ -4,6 +4,8 @@ import json
 from django.http import JsonResponse, HttpResponseForbidden
 from showkeyword.functions.preprocessing import word_by_sent, wbys_to_word, word_to_idx, idx_by_sent
 from showkeyword.functions.textrank import count_window, adjacency_matrix, pagerank
+import networkx as nx
+import community
 
 # Create your views here.
 
@@ -34,3 +36,19 @@ def textrank(request):
             return JsonResponse({"result": idxs})
 
     return HttpResponseForbidden()
+
+def community_detection(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            graph = json.loads(request.body.decode('utf-8'))['graph']
+            G = nx.Graph()
+            for (i, _) in enumerate(graph):
+                for (j, _) in enumerate(graph[i]):
+                    if graph[i][j] > 0:
+                        G.add_edge(i, j, weight = graph[i][j])
+            comm = community.best_partition(G)
+
+            return JsonResponse({"result": comm})
+
+    return HttpResponseForbidden()
+    

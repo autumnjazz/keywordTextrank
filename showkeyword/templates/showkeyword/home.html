@@ -48,11 +48,12 @@
             <div class="col s12">
 				<svg id="graph" width="960" height="600"></svg>
             </div>
-            <div id="control" class="hide">
-                <a id="textrank" class="col s2 waves-effect waves-light btn">TextRank</a>
-                <p id="textrank_result" class= "col s10"></p>
+        </div>
+        <div id="control" class="hide">
+            <div class="row">
+                <a id="textrank" class="waves-effect waves-light btn">TextRank</a>
+                <a id="community_detection" class="waves-effect waves-light btn">Community Detection</a>
             </div>
-            
         </div>
     </div>
 <script>
@@ -66,6 +67,8 @@
 
 
         var graph;
+        var nodes;
+        var links;
         var idx_to_word = [];
         $("#submit").on("click", function(){
             graph = null;
@@ -93,10 +96,17 @@
                     for (var key in data.words) {
                         idx_to_word[data.words[key]] = key;
                     }
+                    console.log(data.words)
+                    nodes = idx_to_word.map(function(word) {
+                        return {
+                            "id": word,
+                            "idx": data.words[word],
+                            "node_color": "black",
+                            "text_color": "black",
+                        }
+                    });
 
-                    let nodes = idx_to_word.map(function(word) { return {"id": word} })
-
-                    let links = []
+                    links = []
                     for (var i = 0; i < graph.length; ++i) {
                         for (var j = 0; j < graph[i].length; ++j) {
                             if (graph[i][j] > 0) {
@@ -122,8 +132,8 @@
 					    .enter().append("g")
     
 					var circles = node.append("circle")
-					    .attr("r", 2.5)
-					    .attr("fill", function(d) { return "black"; })
+					    .attr("r", 4)
+					    .attr("fill", function(d) { return d.node_color; })
     					.call(d3.drag()
           					.on("start", dragstarted)
           					.on("drag", dragged)
@@ -151,12 +161,18 @@
                             .attr("x1", function(d) { return d.source.x; })
                             .attr("y1", function(d) { return d.source.y; })
                             .attr("x2", function(d) { return d.target.x; })
-                            .attr("y2", function(d) { return d.target.y; });
+                            .attr("y2", function(d) { return d.target.y; })
 						
 						node
 							.attr("transform", function(d) {
 								return "translate(" + d.x + "," + d.y + ")";
 							})
+                            .selectAll("circle")
+                                .attr("fill", function(d) { return d.node_color })
+                        
+                        node
+                            .selectAll("text")
+                                .attr("fill", function(d) { return d.text_color });
                     }
                      
                     function dragstarted(d) {
@@ -179,10 +195,7 @@
             });
         });
 
-
         $("#textrank").click(function(e) {
-            console.log(graph)
-            console.log(idx_to_word);
             $.ajax({
                 url: "/textrank/",
                 type: "POST",
@@ -191,6 +204,26 @@
                 dataType: "json",
                 success: function(data) {
                     $("#textrank_result").text(data.result.map((i) => idx_to_word[i]).join(", "));
+                }
+            });
+        });
+
+        $("#community_detection").click(function(e) {
+            $.ajax({
+                url: "/community_detection/",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({graph: graph}),
+                dataType: "json",
+                success: function(data) {
+                    let max = Math.max(...Object.values(data.result));
+                    let colors = []
+                    for (var i = 0; i <= max; ++i) {
+                        colors.push("rgb(" + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")");
+                    }
+                    nodes.forEach((node) => {
+                        node.node_color = colors[data.result[node.idx]]
+                    });
                 }
             });
         });
