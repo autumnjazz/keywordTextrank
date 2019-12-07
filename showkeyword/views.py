@@ -32,8 +32,10 @@ def textrank(request):
         if request.method == 'POST':
             graph = json.loads(request.body.decode('utf-8'))['graph']
             R = pagerank(csr_matrix(graph)).reshape(-1)
-            idxs = list(map(lambda x: x.item(), reversed(R.argsort()[-5:])))
-            return JsonResponse({"result": idxs})
+            minimum = min(R)
+            maximum = max(R)
+            Rnorm = [(1 / (maximum-minimum)*(x-maximum) + 1) for x in R]
+            return JsonResponse({"result": Rnorm})
 
     return HttpResponseForbidden()
 
