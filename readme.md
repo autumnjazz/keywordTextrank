@@ -6,14 +6,17 @@ The core of this project: <br>
    subgraph of community graph or just whole community graph, which includes given mainkeyword.<br>
 4. You can use any type for graphtype parameter("community", "textrank", None), but "textrank" shows the best visualization.<br>
 
+
 textrank
 
 ![textrankgraph](https://user-images.githubusercontent.com/45510328/70393471-9db5a880-1a2d-11ea-81b4-3dc21d3d2c07.png)
 
 subtextrankgraph
 
-![subtextrankgraph](https://user-images.githubusercontent.com/45510328/70393472-a0b09900-1a2d-11ea-94e6-a3180d9bcc1d.png)
+![bar](https://user-images.githubusercontent.com/45510328/70394659-70bbc280-1a3a-11ea-9e1a-56d829c1354f.png)
 
+composition of subtexrankgraphs - what happend???
+![2](https://user-images.githubusercontent.com/45510328/70394660-731e1c80-1a3a-11ea-8511-3d0aff1440c5.png)
 
 
 
