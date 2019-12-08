@@ -1,4 +1,4 @@
-<h1>Community based Textrank Graph<h1>
+<h1>Community based Textrank Graph</h1>
 The core of this project:
 1. Method textrankGraph() must be implemented after communityGraph() method and textrank_keyword() method.
 2. It takes one mainkeyword tuple which formed like: ('bars', 1.8823393131581336).
