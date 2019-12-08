@@ -8,7 +8,7 @@ def get_data(path=None):
         document_text = open(path, 'r', encoding='UTF8')
         text_string = document_text.read() #TODO: KOREAN (UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 0: illegal multibyte sequence)
     else:
-        text_string = open('test_news.txt','r', encoding='UTF8').read()
+        text_string = open('test_middle.txt','r', encoding='UTF8').read()
     return text_string
 
 def split_to_sent(text_string): 
