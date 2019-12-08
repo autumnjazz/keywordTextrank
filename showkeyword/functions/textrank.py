@@ -2,7 +2,7 @@ from collections import defaultdict
 from scipy.sparse import csr_matrix
 from sklearn.preprocessing import normalize
 import numpy as np
-
+import networkx as nx
 """
 based on https://github.com/lovit/textrank
 """
@@ -48,7 +48,7 @@ def pagerank(matrix, df=0.85, max_iter=30): #TODO: change to exact textrank algo
     return R
 
 
-def textrank_keyword(text, ibys, wordlist, topk = 30):
+def textrank_keyword(ibys, wordlist, topk = 30):
     counter = count_window(ibys)
     m = adjacency_matrix(counter, size=len(wordlist))
     R = pagerank(m).reshape(-1)
@@ -56,3 +56,30 @@ def textrank_keyword(text, ibys, wordlist, topk = 30):
     keywords = [(wordlist[idx], R[idx]) for idx in reversed(idxs)]
     return keywords
 
+def textrank_graph(G, center, topk = 5):
+    tmpG = G.copy()
+    tmpG.remove_node(center)
+
+    indextoword = []
+    setindex = dict() #{'fooled': {'index': 0},  ...
+    for idx, node in enumerate(tmpG.nodes()):
+        setindex[node] = {'index':idx}
+        indextoword.append(node)
+    nx.set_node_attributes(tmpG, setindex)
+    wordtoindex = nx.get_node_attributes(tmpG, 'index') #{'fooled': 0, 'word': 1, ...
+    counter = dict()
+    for i,j,d in tmpG.edges.data('weight', default=1):
+        counter[(wordtoindex[i],wordtoindex[j])] = d
+    
+    m = adjacency_matrix(counter, size = len(tmpG.nodes()))
+    R = pagerank(m).reshape(-1)
+    idxs = R.argsort()[-topk:]
+    subkeywords = [(indextoword[idx], R[idx]) for idx in reversed(idxs)]
+    subkeywords.append((center, R[idxs[-1]] * 1.5))
+    return subkeywords
+
+def keywords_to_nodes(keywordslist): # parameter:  [('category', 1.8823393131581336), ...
+    textrank = dict()
+    for kwd in keywordslist:
+        textrank[kwd[0]] = {'weight': kwd[1]}
+    return textrank #{'category': {'weight': 1.8823393131581336}, ...
