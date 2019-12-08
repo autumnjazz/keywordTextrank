@@ -1,10 +1,10 @@
 <h1>Community based Textrank Graph</h1>
-The core of this project:
-1. Method textrankGraph() must be implemented after communityGraph() method and textrank_keyword() method.
-2. It takes one mainkeyword tuple which formed like: ('bars', 1.8823393131581336).
-3. The parameter 'subgraph' determines wheter the result is 
-   subgraph of community graph or just whole community graph, which includes given mainkeyword.
-4. You can use any type for graphtype parameter("community", "textrank", None), but "textrank" shows the best visualization.
+The core of this project: <br>
+1. Method textrankGraph() must be implemented after communityGraph() method and textrank_keyword() method. <br>
+2. It takes one mainkeyword tuple which formed like: ('bars', 1.8823393131581336). <br>
+3. The parameter 'subgraph' determines wheter the result is  <br>
+   subgraph of community graph or just whole community graph, which includes given mainkeyword.<br>
+4. You can use any type for graphtype parameter("community", "textrank", None), but "textrank" shows the best visualization.<br>
 
 textrank
 
