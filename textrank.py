@@ -36,12 +36,12 @@ def adjacency_matrix(counter, size):
         data.append(d)
     return csr_matrix((data, (rows, cols)), shape=(size, size))
 
-def pagerank(matrix, df=0.85, max_iter=30): #TODO: change to exact textrank algorithm (using weights)
+def pagerank(matrix, df=0.85, max_iter=30):
     assert 0 < df < 1
     # initialize
     A = normalize(matrix, axis=0, norm='l1')
     R = np.ones(A.shape[0]).reshape(-1,1)
-    bias = (1 - df) * np.ones(A.shape[0]).reshape(-1,1)
+    bias = (1 - df) * R
     # iteration
     for _ in range(max_iter):
         R = df * (A * R) + bias
@@ -75,7 +75,7 @@ def textrank_graph(G, center, topk = 5):
     R = pagerank(m).reshape(-1)
     idxs = R.argsort()[-topk:]
     subkeywords = [(indextoword[idx], R[idx]) for idx in reversed(idxs)]
-    subkeywords.append((center, R[idxs[-1]] * 1.5))
+    subkeywords.append((center, R[idxs[-1]] * 1.2))
     return subkeywords
 
 def keywords_to_nodes(keywordslist): # parameter:  [('category', 1.8823393131581336), ...

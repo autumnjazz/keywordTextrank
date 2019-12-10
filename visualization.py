@@ -37,8 +37,13 @@ def textrankGraph(G, keyword, subgraph = False): #keyword: ('category', 1.882339
     subnodes = keywords_to_nodes(subkeywords)
     nx.set_node_attributes(TG, subnodes)
 
-    if subgraph == True:
-        STG = TG.subgraph(subnodes) #networkx library function
+    if subgraph == True:    
+        STG = nx.Graph()
+        STG.add_nodes_from(subnodes)
+        nx.set_node_attributes(STG, subnodes)
+        for n in STG.nodes():
+            if n != keyword[0]:
+                STG.add_edge(keyword[0], n) #no meanings
         return STG
     else:
         return TG
@@ -89,10 +94,10 @@ def drawgraph(G, cmap = "Blues", nodesize = 350, graphtype = None, savepath=None
         font_size = 6,
         width = 0.4 
     ) 
+    
     if show == True:
         plt.show()
 
     if savepath != None:
         plt.savefig(savepath,  bbox_inches ='tight')
         plt.close()
-        

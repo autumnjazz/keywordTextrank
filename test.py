@@ -1,10 +1,9 @@
 import networkx as nx
 
-level = 3
-numofkeys = 1 #the number of mainkeywords   #2**level -1 #sum of G.P. with common ratio = 2
+numofkeys = 5
 
 from preprocessing import get_data, word_by_sent, wbys_to_word, word_to_idx, idx_by_sent
-text = get_data()
+text = get_data("data/test_middle.txt")
 wbys = word_by_sent(text)
 wordlist = wbys_to_word(wbys)
 wtoi = word_to_idx(wordlist)
@@ -36,7 +35,14 @@ The core of this project:
    subgraph of community graph or just whole community graph, which includes given mainkeyword.
 4. You can use any type for graphtype parameter("community", "textrank", None), but "textrank" shows the best visualization.
 """
-TG = vis.textrankGraph(IG, mainkeywords[0], subgraph = False) #textrank graph with whole community
-vis.drawgraph(TG, cmap = "YlGn", graphtype = "textrank", savepath="textrankgraph.png",show = False)
-STG = vis.textrankGraph(IG, mainkeywords[0], subgraph = True) #sub textrank graph
-vis.drawgraph(STG, cmap = "YlGn", graphtype = "textrank", savepath="subtextrankgraph.png",show = False)
+# TG = vis.textrankGraph(IG, mainkeywords[0], subgraph = False) #textrank graph with whole community
+# vis.drawgraph(TG, cmap = "YlGn", graphtype = "textrank", savepath=None,show = False)
+
+submindmaplist = []
+for keyword in mainkeywords:
+    STG = vis.textrankGraph(IG, keyword, subgraph = True) #sub textrank graph
+    submindmaplist.append(STG)
+    # vis.drawgraph(STG, cmap = "YlGn", graphtype = "textrank", savepath= keyword[0] + ".png",show = False)
+
+mindmap = nx.compose_all(submindmaplist)
+vis.drawgraph(mindmap, cmap = "Set2", graphtype = "textrank", savepath=None,show = True)
